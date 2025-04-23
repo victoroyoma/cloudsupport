@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Header } from './components/Layout/Header';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { TicketSystem } from './components/TicketSystem/TicketSystem';
 import { ChatSupport } from './components/ChatSupport/ChatSupport';
 import { Documentation } from './components/Documentation/Documentation';
-export function App() {
+import { LoginForm } from './components/Auth/LoginForm';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+const AppContent = () => {
   const [currentView, setCurrentView] = useState('dashboard');
-  return <div className="flex w-full h-screen bg-gray-50">
+  const { user } = useAuth();
+
+  if (!user) {
+    return <LoginForm />;
+  }
+
+  return (
+    <div className="flex w-full h-screen bg-gray-50">
       <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
@@ -18,5 +28,14 @@ export function App() {
           {currentView === 'docs' && <Documentation />}
         </main>
       </div>
-    </div>;
+    </div>
+  );
+};
+
+export function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
